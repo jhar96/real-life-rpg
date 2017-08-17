@@ -25,6 +25,12 @@ describe('AppComponent', () => {
     fixture.detectChanges();
   });
 
+  it('should have a nav bar', () => {
+    let de = fixture.debugElement.query(By.css('app-nav'));
+
+    expect(de).not.toBeNull();
+  });
+
   it('should have a router outlet', () => {
     let de = fixture.debugElement.query(By.directive(RouterOutlet));
 

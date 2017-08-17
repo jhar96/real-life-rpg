@@ -1,3 +1,26 @@
-<nav>
-  <a routerLink="home"></a>
-</nav>
+
+<div class="ui secondary pointing menu">
+  <a class="item">
+    RealLifeRPG
+  </a>
+  <a class="item" [routerLink]="['activities']" routerLinkActive="active">
+  Activities
+  </a>
+<!--  <a class="item" [routerLink]="['profile']" routerLinkActive="active">
+    Profile
+  </a>
+  <a class="item" [routerLink]="['protected']" routerLinkActive="active">
+    Protected content
+  </a>-->
+  <div class="right menu">
+    <a class="ui item" [routerLink]="['login']" routerLinkActive="active">
+      Login
+    </a>
+    <a class="ui item" [routerLink]="['register']" routerLinkActive="active">
+      Register
+    </a>
+    <a class="ui item" style="cursor: pointer">
+      Logout
+    </a>
+  </div>
+</div>

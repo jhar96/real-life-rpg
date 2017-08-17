@@ -27,10 +27,24 @@ describe('NavComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have a link to the home page', () => {
+  it('should have a link to the activities page', () => {
     let des = fixture.debugElement.queryAll(By.directive(RouterLinkWithHref));
 
-    let index = des.findIndex(de => de.properties['href'] === '/home');
+    let index = des.findIndex(de => de.properties['href'] === '/activities');
+    expect(index).toBeGreaterThan(-1);
+  });
+
+  it('should have a link to the login page', () => {
+    let des = fixture.debugElement.queryAll(By.directive(RouterLinkWithHref));
+
+    let index = des.findIndex(de => de.properties['href'] === '/login');
+    expect(index).toBeGreaterThan(-1);
+  });
+
+  it('should have a link to the register page', () => {
+    let des = fixture.debugElement.queryAll(By.directive(RouterLinkWithHref));
+
+    let index = des.findIndex(de => de.properties['href'] === '/register');
     expect(index).toBeGreaterThan(-1);
   });
 });
