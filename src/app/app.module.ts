@@ -14,6 +14,8 @@ import {AngularFireDatabaseModule} from "angularfire2/database";
 import {AngularFireAuthModule} from "angularfire2/auth";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
+import {FirstKeyPipe} from "./util/first-key.pipe";
+import {AuthService} from "./auth/auth.service";
 
 @NgModule({
   declarations: [
@@ -21,7 +23,8 @@ import {CommonModule} from "@angular/common";
     NavComponent,
     LoginComponent,
     RegisterComponent,
-    ActivitiesComponent
+    ActivitiesComponent,
+    FirstKeyPipe
   ],
   imports: [
     BrowserModule,
@@ -33,7 +36,7 @@ import {CommonModule} from "@angular/common";
     CommonModule,
     // FormsModule, // needed?
   ],
-  providers: [],
+  providers: [AuthService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
