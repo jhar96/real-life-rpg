@@ -7,7 +7,7 @@ import {NoAuthGuard} from "./auth/no-auth.guard";
 
 describe('routes', () => {
 
-  it('should contain a route for /activities that is only accessible if not logged in', () => {
+  it('should contain a route for /activities that is only accessible if logged in', () => {
     expect(routes).toContain({ path: 'activities', component: ActivitiesComponent, canActivate: [AuthGuard] });
   });
 

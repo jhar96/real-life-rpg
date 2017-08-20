@@ -10,12 +10,12 @@ export class NavComponent implements OnInit {
 
   isAuthenticated = false;
 
-  constructor(public auth: AuthService) { }
+  constructor(public auth: AuthService) {}
 
   ngOnInit() {
     this.auth.isAuth().subscribe(
       authStatus => {
-        this.isAuthenticated = authStatus;
+       this.isAuthenticated = authStatus;
       }
     );
   }

@@ -36,8 +36,7 @@ export class AuthService {
             console.log('user data could not be loaded..');
             if (this.tempUser) {
               console.log('first login..');
-              this.currentUser = new User(this.tempUser.emailAddress, this.tempUser.username);
-              this.currentUser.uid = auth.uid;
+              this.currentUser = new User(this.tempUser.emailAddress, this.tempUser.username, auth.uid);
               this.updateUserData(this.tempUser.emailAddress, this.tempUser.username);
             } else {
               console.log('temp user was empty');
@@ -52,7 +51,7 @@ export class AuthService {
     });
   }
 
-  isAuth() {
+  isAuth(): Observable<boolean> {
     const state = new Subject<boolean>();
     this.afAuth.auth.onAuthStateChanged(user => {
       if (user) {

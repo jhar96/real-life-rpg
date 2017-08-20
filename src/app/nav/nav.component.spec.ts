@@ -9,6 +9,7 @@ import {AngularFireAuthModule} from "angularfire2/auth";
 import {AngularFireModule} from "angularfire2";
 import {environment} from "../../environments/environment";
 import {AngularFireDatabaseModule} from "angularfire2/database";
+import {Observable} from "rxjs/Observable";
 
 describe('NavComponent', () => {
   let component: NavComponent;
@@ -40,28 +41,114 @@ describe('NavComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have a link to the activities page', () => {
-    let des = fixture.debugElement.queryAll(By.directive(RouterLinkWithHref));
+  describe('should if isAuthenticated is true', () => {
+    beforeEach(() => {
+      component.isAuthenticated = true;
+      fixture.detectChanges();
+    });
 
-    let index = des.findIndex(de => de.properties['href'] === '/activities');
-    expect(index).toBeGreaterThan(-1);
+    it('have a link to the activities page', () => {
+      const des = fixture.debugElement.queryAll(By.directive(RouterLinkWithHref));
+
+      const index = des.findIndex(de => de.properties['href'] === '/activities');
+      expect(index).toBeGreaterThan(-1);
+    });
+
+    it('not have a link to the login page', () => {
+      const des = fixture.debugElement.queryAll(By.directive(RouterLinkWithHref));
+
+      const index = des.findIndex(de => de.properties['href'] === '/login');
+      expect(index).not.toBeGreaterThan(-1);
+    });
+
+    it('not have a link to the register page', () => {
+      const des = fixture.debugElement.queryAll(By.directive(RouterLinkWithHref));
+
+      const index = des.findIndex(de => de.properties['href'] === '/register');
+      expect(index).not.toBeGreaterThan(-1);
+    });
+
+    it('have a logout button', () => {
+      const des = fixture.debugElement.queryAll(By.css('a'));
+
+      const index = des.findIndex(de => de.nativeElement.innerText === 'Logout'); //todo a bit fragile
+      expect(index).toBeGreaterThan(-1);
+    });
   });
 
-  it('should have a link to the login page', () => {
-    let des = fixture.debugElement.queryAll(By.directive(RouterLinkWithHref));
+  describe('should if isAuthenticated is false', () => {
+    beforeEach(() => {
+      component.isAuthenticated = false;
+      fixture.detectChanges();
+    });
 
-    let index = des.findIndex(de => de.properties['href'] === '/login');
-    expect(index).toBeGreaterThan(-1);
+    it('not have a link to the activities page', () => {
+      const des = fixture.debugElement.queryAll(By.directive(RouterLinkWithHref));
+
+      const index = des.findIndex(de => de.properties['href'] === '/activities');
+      expect(index).not.toBeGreaterThan(-1);
+    });
+
+    it('have a link to the login page', () => {
+      const des = fixture.debugElement.queryAll(By.directive(RouterLinkWithHref));
+
+      const index = des.findIndex(de => de.properties['href'] === '/login');
+      expect(index).toBeGreaterThan(-1);
+    });
+
+    it('have a link to the register page', () => {
+      const des = fixture.debugElement.queryAll(By.directive(RouterLinkWithHref));
+
+      const index = des.findIndex(de => de.properties['href'] === '/register');
+      expect(index).toBeGreaterThan(-1);
+    });
+
+    it('not have a logout button', () => {
+      const des = fixture.debugElement.queryAll(By.css('a'));
+
+      const index = des.findIndex(de => de.nativeElement.innerText === 'Logout'); // todo a bit fragile
+      expect(index).not.toBeGreaterThan(-1);
+    });
   });
 
-  it('should have a link to the register page', () => {
-    let des = fixture.debugElement.queryAll(By.directive(RouterLinkWithHref));
+  it('should update isAuthenticated with true if returned from the AuthService', async(() => {
+    const auth = TestBed.get(AuthService);
+    spyOn(auth, 'isAuth').and
+      .callFake(() => {
+        return (Observable.from([true]));
+      });
 
-    let index = des.findIndex(de => de.properties['href'] === '/register');
-    expect(index).toBeGreaterThan(-1);
-  });
+    component.isAuthenticated = false;
+    component.ngOnInit();
 
-  // todo Everything with displaying and not displaying buttons
+    expect(component.isAuthenticated).toBe(true);
+/*    fixture.whenStable().then(() => { // todo correct??? or call ngoninit? what is this doing.. looks good tho
+      expect(component.isAuthenticated).toBe(true);
+    });*/
+  }));
 
-  // todo logout
+  it('should update isAuthenticated with false if returned from the AuthService', async(() => {
+    const auth = TestBed.get(AuthService);
+    spyOn(auth, 'isAuth').and
+      .callFake(() => {
+        return (Observable.from([false]));
+      });
+
+    component.isAuthenticated = true;
+    component.ngOnInit();
+
+    expect(component.isAuthenticated).toBe(false);
+    /*    fixture.whenStable().then(() => { // todo correct??? or call ngoninit? what is this doing.. looks good tho
+     expect(component.isAuthenticated).toBe(true);
+     });*/
+  }));
+
+  it('should call logout from the AuthService if onLogout called', async(() => {
+    const auth = TestBed.get(AuthService);
+    const spy = spyOn(auth, 'logout');
+
+    component.onLogout();
+
+    expect(spy).toHaveBeenCalled();
+  }));
 });
