@@ -34,24 +34,26 @@ export class RegisterComponent implements OnInit {
     this.registrationError = null;
     this.registrationSuccess = null;
     this.loading = true;
-    // todo for some reason the observable returned from check username has sent twice
-    // I think the problem is that it queues again after we add the new username
     let sub = this.checkUsername().subscribe(usernameValid => {
+      sub.unsubscribe(); // otherwise it queues again after we add the new username to the db
       if (usernameValid) {
-        sub.unsubscribe(); // otherwise it queues again after we add the new username to the db
+        console.log('username was valid..');
         sub = this.checkEmail().subscribe(emailValid => {
+          sub.unsubscribe(); // otherwise it queues again after we add the new email address to the db
           if (emailValid) {
-            sub.unsubscribe(); // otherwise it queues again after we add the new email address to the db
+            console.log('email was valid');
             this.auth.emailRegistration(this.email.value, this.username.value, this.password.value);
             this.loading = false;
             this.registrationSuccess = 'Registration successful';
             this.registerForm.reset();
           } else {
+            console.log('email was invalid');
             this.loading = false;
             this.registrationError = 'Email already taken';
           }
         });
       } else {
+        console.log('username was invalid..');
         this.loading = false;
         this.registrationError = 'Username already taken';
       }

@@ -13,13 +13,13 @@
     Protected content
   </a>-->
   <div class="right menu">
-    <a class="ui item" [routerLink]="['login']" routerLinkActive="active">
+    <a class="ui item" [routerLink]="['login']" routerLinkActive="active" *ngIf="!auth.isAuthenticated">
       Login
     </a>
-    <a class="ui item" [routerLink]="['register']" routerLinkActive="active">
+    <a class="ui item" [routerLink]="['register']" routerLinkActive="active" *ngIf="!auth.isAuthenticated">
       Register
     </a>
-    <a class="ui item" style="cursor: pointer">
+    <a class="ui item" (click)="onLogout()" style="cursor: pointer" *ngIf="auth.isAuthenticated">
       Logout
     </a>
   </div>

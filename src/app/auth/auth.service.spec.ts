@@ -12,4 +12,6 @@ describe('AuthService', () => {
   it('should be created', inject([AuthService], (service: AuthService) => {
     expect(service).toBeTruthy();
   }));
+
+  // todo registering Logging in and logging out
 });

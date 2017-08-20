@@ -1,12 +1,8 @@
 export class User {
+  // todo should probably not be public
+  public uid: string;
 
-  uid: string;
-
-  username = '';
-
-  emailAddress = '';
-
-  constructor(auth) {
-    this.uid = auth.uid;
+  constructor(public emailAddress: string, public username: string) {
   }
+
 }

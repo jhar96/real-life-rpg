@@ -1,1 +1,54 @@
-login works
+<div class="ui middle aligned center aligned grid">
+  <div class="column">
+    <form class="ui large form" wtx-context="A10A0751-E8DA-456A-9F86-D48938ABEAD4"
+          [formGroup]="loginForm" (ngSubmit)="onLogin()">
+      <div class="ui stacked segment">
+
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="mail icon"></i>
+            <input type="email" placeholder="email" wtx-context="636A5E6D-416E-47DE-8F12-29651ED118F6"
+                   formControlName="email" id="email" required>
+          </div>
+          <div class="ui red tiny message" *ngIf="email.invalid && (email.dirty || email.touched)">
+            <div *ngIf="(email.errors | first)==='required'">
+              Please enter your email address
+            </div>
+            <div *ngIf="(email.errors | first)==='email'">
+              Please enter a valid email address
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="lock icon"></i>
+            <input type="password" placeholder="password" wtx-context="636A5E6D-416E-47DE-8F12-29651ED118F6"
+                   formControlName="password" id="password" required>
+          </div>
+          <div class="ui red tiny message" *ngIf="password.invalid && (password.dirty || password.touched)">
+            <div *ngIf="(password.errors | first)==='required'">
+              Please enter a password
+            </div>
+          </div>
+
+        </div>
+
+        <button class="ui fluid large primary submit button" type="submit" [disabled]="!loginForm.valid">Login</button>
+        <div class="ui segment" *ngIf="loading">
+          <p></p>
+          <div class="ui active inverted dimmer">
+            <div class="ui loader"></div>
+          </div>
+        </div>
+        <div class="ui green tiny message" *ngIf="loginSuccess">
+          {{ loginSuccess }}
+        </div>
+        <div class="ui red tiny message" *ngIf="loginError">
+          {{ loginError }}
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+

@@ -47,4 +47,8 @@ describe('NavComponent', () => {
     let index = des.findIndex(de => de.properties['href'] === '/register');
     expect(index).toBeGreaterThan(-1);
   });
+
+  // todo Everything with displaying and not displaying buttons
+
+  // todo logout
 });
