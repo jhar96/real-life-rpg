@@ -4,6 +4,12 @@ import { RegisterComponent } from './register.component';
 import {ReactiveFormsModule} from "@angular/forms";
 import {FirstKeyPipe} from "../../util/first-key.pipe";
 import {By} from "@angular/platform-browser";
+import {AngularFireAuth, AngularFireAuthModule} from "angularfire2/auth";
+import {RouterTestingModule} from "@angular/router/testing";
+import {AngularFireModule} from "angularfire2";
+import {AngularFireDatabaseModule} from "angularfire2/database";
+import {environment} from "../../../environments/environment";
+import {AuthService} from "../auth.service";
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
@@ -11,10 +17,19 @@ describe('RegisterComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
+      imports: [
+        ReactiveFormsModule,
+        RouterTestingModule.withRoutes([]),
+        AngularFireModule.initializeApp(environment.firebase),
+        AngularFireDatabaseModule,
+        AngularFireAuthModule,
+      ],
       declarations: [
         RegisterComponent,
         FirstKeyPipe
+      ],
+      providers: [
+        AuthService,
       ]
     })
     .compileComponents();

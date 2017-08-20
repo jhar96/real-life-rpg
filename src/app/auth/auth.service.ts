@@ -6,6 +6,7 @@ import "rxjs/add/operator/switchMap";
 import {Observable} from "rxjs/Observable";
 import "rxjs/add/operator/map";
 import {Router} from "@angular/router";
+import {Subject} from "rxjs";
 
 @Injectable()
 export class AuthService {
@@ -13,8 +14,6 @@ export class AuthService {
   currentUser: User;
 
   tempUser: User;
-
-  isAuthenticated = false;
 
   constructor(private afAuth: AngularFireAuth,
               private db: AngularFireDatabase,
@@ -24,7 +23,6 @@ export class AuthService {
       console.log('auth has changed..');
       if (auth) {
         console.log('new auth is there..');
-        this.isAuthenticated = true;
         // try to load user data
         const sub = this.db.object(`/users/${auth.uid}`).subscribe(userData => { // todo cancel sub? when todo that in gen?
           sub.unsubscribe();
@@ -45,15 +43,25 @@ export class AuthService {
               console.log('temp user was empty');
             }
           }
-          this.router.navigate(['/activities']);
         });
       } else {
         // logout
         console.log('logout..');
-        this.isAuthenticated = false;
-        this.router.navigate(['/register']);
+        // this.router.navigate(['/register']);
       }
     });
+  }
+
+  isAuth() {
+    const state = new Subject<boolean>();
+    this.afAuth.auth.onAuthStateChanged(user => {
+      if (user) {
+        state.next(true);
+      } else {
+        state.next(false);
+      }
+    });
+    return state.asObservable();
   }
 
   emailRegistration(email: string, username: string, password: string) {
@@ -62,6 +70,7 @@ export class AuthService {
     this.afAuth.auth.createUserWithEmailAndPassword(email, password)
       .then(() => {
         console.log('successful email registration..');
+        this.router.navigate(['/activities']);
       })
       .catch(error => console.log(error));
   }
@@ -130,13 +139,19 @@ export class AuthService {
   login(emailAddress: string, password: string) {
     console.log('logging in');
     return this.afAuth.auth.signInWithEmailAndPassword(emailAddress, password)
-      .then(() => null)
+      .then(() => {
+        this.router.navigate(['/activities']);
+        return null;
+      })
       .catch(error => {
         return error.message;
       });
   }
 
   logout() {
-    this.afAuth.auth.signOut();
+    this.afAuth.auth.signOut()
+      .then(() => {
+        this.router.navigate(['/login']);
+      });
   }
 }

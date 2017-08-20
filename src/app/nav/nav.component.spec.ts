@@ -4,6 +4,11 @@ import { NavComponent } from './nav.component';
 import {RouterTestingModule} from "@angular/router/testing";
 import {RouterLinkWithHref} from "@angular/router";
 import {By} from "@angular/platform-browser";
+import {AuthService} from "../auth/auth.service";
+import {AngularFireAuthModule} from "angularfire2/auth";
+import {AngularFireModule} from "angularfire2";
+import {environment} from "../../environments/environment";
+import {AngularFireDatabaseModule} from "angularfire2/database";
 
 describe('NavComponent', () => {
   let component: NavComponent;
@@ -11,8 +16,16 @@ describe('NavComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ RouterTestingModule.withRoutes([]) ],
-      declarations: [ NavComponent ]
+      imports: [
+        AngularFireAuthModule,
+        AngularFireDatabaseModule,
+        AngularFireModule.initializeApp(environment.firebase),
+        RouterTestingModule.withRoutes([]),
+      ],
+      declarations: [ NavComponent ],
+      providers: [
+        AuthService,
+      ]
     })
     .compileComponents();
   }));

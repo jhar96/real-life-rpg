@@ -1,11 +1,24 @@
 import { TestBed, inject } from '@angular/core/testing';
 
 import { AuthService } from './auth.service';
+import {AngularFireAuth, AngularFireAuthModule} from "angularfire2/auth";
+import {AngularFireModule} from "angularfire2";
+import {environment} from "../../environments/environment";
+import {AngularFireDatabaseModule} from "angularfire2/database";
+import {RouterTestingModule} from "@angular/router/testing";
 
 describe('AuthService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [AuthService]
+      imports: [
+        AngularFireModule.initializeApp(environment.firebase),
+        AngularFireDatabaseModule,
+        AngularFireAuthModule,
+        RouterTestingModule.withRoutes([]),
+      ],
+      providers: [
+        AuthService,
+      ]
     });
   });
 

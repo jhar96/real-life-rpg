@@ -16,6 +16,8 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {FirstKeyPipe} from "./util/first-key.pipe";
 import {AuthService} from "./auth/auth.service";
+import {AuthGuard} from "./auth/auth.guard";
+import {NoAuthGuard} from "./auth/no-auth.guard";
 
 @NgModule({
   declarations: [
@@ -36,7 +38,11 @@ import {AuthService} from "./auth/auth.service";
     CommonModule,
     // FormsModule, // needed?
   ],
-  providers: [AuthService],
+  providers: [
+    AuthService,
+    AuthGuard,
+    NoAuthGuard,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

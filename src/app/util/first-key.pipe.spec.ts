@@ -1,5 +1,5 @@
 import {FirstKeyPipe} from "./first-key.pipe";
-describe('first key pipe', () => {
+describe('FirstKeyPipe', () => {
 
   let pipe: FirstKeyPipe;
 
