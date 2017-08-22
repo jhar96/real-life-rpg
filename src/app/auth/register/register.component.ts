@@ -1,3 +1,4 @@
+///<reference path="../auth.service.ts"/>
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../auth.service";
@@ -12,65 +13,67 @@ import {register} from "ts-node/dist";
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-  registerForm: FormGroup;
 
-  registrationError: string;
+  private _registerForm: FormGroup;
 
-  registrationSuccess: string;
+  private _registrationError: string;
 
-  loading = false;
+  private _registrationSuccess: string;
+
+  private _isLoading = false;
 
   constructor(private fb: FormBuilder, private auth: AuthService) { }
 
   ngOnInit(): void {
-    this.registerForm = this.fb.group({
+    this._registerForm = this.fb.group({
       email: ['', Validators.compose([Validators.required, Validators.email])],
       username: ['', Validators.required],
       password: ['', Validators.compose([Validators.required, Validators.minLength(6)])],
     });
   }
 
-  onRegister() {
-    this.registrationError = null;
-    this.registrationSuccess = null;
-    this.loading = true;
-    let sub = this.checkUsername().subscribe(usernameValid => {
-      sub.unsubscribe(); // otherwise it queues again after we add the new username to the db
-      if (usernameValid) {
-        console.log('username was valid..');
-        sub = this.checkEmail().subscribe(emailValid => {
-          sub.unsubscribe(); // otherwise it queues again after we add the new email address to the db
-          if (emailValid) {
-            console.log('email was valid');
-            this.auth.emailRegistration(this.email.value, this.username.value, this.password.value);
-            this.loading = false;
-            this.registrationSuccess = 'Registration successful';
-            this.registerForm.reset();
-          } else {
-            console.log('email was invalid');
-            this.loading = false;
-            this.registrationError = 'Email already taken';
-          }
-        });
-      } else {
-        console.log('username was invalid..');
-        this.loading = false;
-        this.registrationError = 'Username already taken';
-      }
-    });
+  onRegister() { // todo clicks beschränken? bzw dass man nichts anderes tun kann währenddessen?
+    console.log('onRegister has been called');
+    this.auth.emailRegistration2(this);
   }
 
-  private checkUsername(): Observable<any> {
-    return this.auth.checkUsername(this.username.value);
+  get registerForm(): FormGroup {
+    return this._registerForm;
   }
 
-  private checkEmail(): Observable<any> {
-    return this.auth.checkEmail(this.email.value);
+  get email() {
+    return this._registerForm.get('email');
   }
 
-  get email() { return this.registerForm.get('email'); }
+  get username() {
+    return this._registerForm.get('username');
+  }
 
-  get username() { return this.registerForm.get('username'); }
+  get password() {
+    return this._registerForm.get('password');
+  }
 
-  get password() { return this.registerForm.get('password'); }
+  get registrationError(): string {
+    return this._registrationError;
+  }
+
+  set registrationError(value: string) {
+    this._registrationError = value;
+  }
+
+  get registrationSuccess(): string {
+    return this._registrationSuccess;
+  }
+
+  set registrationSuccess(value: string) {
+    this._registrationSuccess = value;
+  }
+
+  get isLoading(): boolean {
+    return this._isLoading;
+  }
+
+  set isLoading(value: boolean) {
+    this._isLoading = value;
+  }
 }

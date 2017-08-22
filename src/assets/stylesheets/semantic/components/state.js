@@ -630,7 +630,7 @@ $.fn.state.settings = {
 
   // selector filter
   filter     : {
-    text   : '.loading, .disabled',
+    text   : '.isLoading, .disabled',
     active : '.disabled'
   },
 

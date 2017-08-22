@@ -13841,7 +13841,7 @@ $.fn.search = function(parameters) {
               ? callback
               : function(){}
             ;
-            if($module.api('is loading')) {
+            if($module.api('is isLoading')) {
               $module.api('abort');
             }
             module.setup.api(searchTerm, callback);
@@ -16889,7 +16889,7 @@ $.fn.sticky = function(parameters) {
             });
           },
           load: function() {
-            module.verbose('Page contents finished loading');
+            module.verbose('Page contents finished isLoading');
             requestAnimationFrame(module.refresh);
           },
           resize: function() {
@@ -17937,7 +17937,7 @@ $.fn.tab = function(parameters) {
               isLoading = $tab.hasClass(className.loading)
             ;
             if(!isLoading) {
-              module.verbose('Setting loading state for', $tab);
+              module.verbose('Setting isLoading state for', $tab);
               $tab
                 .addClass(className.loading)
                 .siblings($tabs)
@@ -18167,7 +18167,7 @@ $.fn.tab = function(parameters) {
             }
             else if(existingRequest) {
               module.set.loading(tabPath);
-              module.debug('Content is already loading', fullTabPath);
+              module.debug('Content is already isLoading', fullTabPath);
             }
             else if($.api !== undefined) {
               requestSettings = $.extend(true, {}, settings.apiSettings, apiSettings);
@@ -18559,7 +18559,7 @@ $.fn.tab.settings = {
   onFirstLoad : function(tabPath, parameterArray, historyEvent) {}, // called first time loaded
   onLoad      : function(tabPath, parameterArray, historyEvent) {}, // called on every load
   onVisible   : function(tabPath, parameterArray, historyEvent) {}, // called every time tab visible
-  onRequest   : function(tabPath, parameterArray, historyEvent) {}, // called ever time a tab beings loading remote content
+  onRequest   : function(tabPath, parameterArray, historyEvent) {}, // called ever time a tab beings isLoading remote content
 
   templates : {
     determineTitle: function(tabArray) {} // returns page title for path
@@ -20368,7 +20368,7 @@ $.api = $.fn.api = function(parameters) {
             $context.addClass(className.error);
           },
           loading: function() {
-            module.verbose('Adding loading state to element', $context);
+            module.verbose('Adding isLoading state to element', $context);
             $context.addClass(className.loading);
             requestStartTime = new Date().getTime();
           }
@@ -20380,7 +20380,7 @@ $.api = $.fn.api = function(parameters) {
             $context.removeClass(className.error);
           },
           loading: function() {
-            module.verbose('Removing loading state from element', $context);
+            module.verbose('Removing isLoading state from element', $context);
             $context.removeClass(className.loading);
           }
         },
@@ -20743,7 +20743,7 @@ $.api.settings = {
   // context for applying state classes
   stateContext      : false,
 
-  // duration for loading state
+  // duration for isLoading state
   loadingDuration   : 0,
 
   // whether to hide errors after a period of time
@@ -21493,7 +21493,7 @@ $.fn.state.settings = {
 
   // selector filter
   filter     : {
-    text   : '.loading, .disabled',
+    text   : '.isLoading, .disabled',
     active : '.disabled'
   },
 
@@ -21777,7 +21777,7 @@ $.fn.visibility = function(parameters) {
             }
           },
           load: function() {
-            module.debug('Page finished loading');
+            module.debug('Page finished isLoading');
             requestAnimationFrame(module.refresh);
           },
           // publishes scrollchange event on one scroll
@@ -21861,7 +21861,7 @@ $.fn.visibility = function(parameters) {
               src = $module.data(metadata.src)
             ;
             if(src) {
-              module.verbose('Lazy loading image', src);
+              module.verbose('Lazy isLoading image', src);
               settings.once           = true;
               settings.observeChanges = false;
 

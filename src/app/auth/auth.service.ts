@@ -7,6 +7,7 @@ import {Observable} from "rxjs/Observable";
 import "rxjs/add/operator/map";
 import {Router} from "@angular/router";
 import {Subject} from "rxjs";
+import {RegisterComponent} from "./register/register.component";
 
 @Injectable()
 export class AuthService {
@@ -19,39 +20,49 @@ export class AuthService {
               private db: AngularFireDatabase,
               private router: Router,
   ) {
+    this.initialize();
+  }
+
+  private initialize() {
     this.afAuth.authState.subscribe(auth => {
       console.log('auth has changed..');
       if (auth) {
-        console.log('new auth is there..');
-        // try to load user data
-        const sub = this.db.object(`/users/${auth.uid}`).subscribe(userData => { // todo cancel sub? when todo that in gen?
-          sub.unsubscribe();
-          if (userData.$value) {
-            // login
-            console.log('user data loaded..');
-            console.log('login..');
-            // todo should create user here
-          } else {
-            // first login
-            console.log('user data could not be loaded..');
-            if (this.tempUser) {
-              console.log('first login..');
-              this.currentUser = new User(this.tempUser.emailAddress, this.tempUser.username, auth.uid);
-              this.updateUserData(this.tempUser.emailAddress, this.tempUser.username);
-            } else {
-              console.log('temp user was empty');
-            }
-          }
-        });
+        this.handleLogin(auth);
       } else {
-        // logout
-        console.log('logout..');
-        // this.router.navigate(['/register']);
+        this.handleLogout(auth);
       }
     });
   }
 
-  isAuth(): Observable<boolean> {
+  private handleLogin(auth) {
+    console.log('handleLogin');
+    // try to load user data
+    this.db.object(`/users/${auth.uid}`).first().subscribe(userData => { // todo cancel sub? when todo that in gen?
+      if (userData.$value) {
+        // login
+        console.log('user data loaded..');
+        console.log('login..');
+        // todo should create user here
+      } else {
+        // first login
+        console.log('user data could not be loaded..');
+        if (this.tempUser) {
+          console.log('first login..');
+          this.currentUser = new User(this.tempUser.emailAddress, this.tempUser.username, auth.uid);
+          this.updateUserData(this.tempUser.emailAddress, this.tempUser.username);
+        } else {
+          console.log('temp user was empty');
+        }
+      }
+    });
+  }
+
+  private handleLogout(auth) {
+    console.log('handleLogout');
+    // this.router.navigate(['/register']);
+  }
+
+  public isAuth(): Observable<boolean> { // todo change this to this.afAuth.authState?
     const state = new Subject<boolean>();
     this.afAuth.auth.onAuthStateChanged(user => {
       if (user) {
@@ -63,64 +74,104 @@ export class AuthService {
     return state.asObservable();
   }
 
-  emailRegistration(email: string, username: string, password: string) {
-    console.log('email registration..')
-    this.tempUser = new User(email, username); // todo Is there any problem with doing this if the registration fails?
-    this.afAuth.auth.createUserWithEmailAndPassword(email, password)
+  public emailRegistration2(reg: RegisterComponent) {
+    this.registrationPreparation(reg);
+    this.validateRegistration(reg)
+      .subscribe(error => {
+        if (error) {
+          this.handleRegistrationError(reg, error);
+        } else {
+          this.tryEmailRegistration2(reg);
+        }
+      });
+  }
+
+  private registrationPreparation(reg: RegisterComponent) {
+    console.log('registrationPreparation');
+    reg.registrationError = null; // todo why can I not call the setter in another way
+    reg.registrationSuccess = null;
+    reg.isLoading = true;
+  }
+
+  private handleRegistrationError(reg, error) {
+    console.log('handleRegistrationError');
+    reg.isLoading = false;
+    reg.registrationError = error;
+  }
+
+  private handleRegistrationSuccess(reg) {
+    console.log('handleRegistrationSuccess');
+    reg.isLoading = false;
+    reg.registrationSuccess = 'Registration succesful';
+  }
+
+  private tryEmailRegistration2(reg: RegisterComponent) {
+    console.log('tryEmailRegistration2');
+    this.tempUser = new User(reg.email.value, reg.username.value);
+    this.afAuth.auth.createUserWithEmailAndPassword(reg.email.value , reg.password.value)
       .then(() => {
-        console.log('successful email registration..');
-        this.router.navigate(['/activities']);
+        this.handleRegistrationSuccess(reg);
+        this.router.navigate(['/activities']); // todo should not happen here..
       })
-      .catch(error => console.log(error));
+      .catch(registrationError => {
+        console.log('failed email registration');
+        console.log(registrationError.message);
+        this.handleRegistrationError(reg, registrationError.message); 
+      });
   }
 
-  updateUserData(emailAddress: string, username: string) {
-    console.log('updating user data..');
-    this.updateUsername(username);
-    this.updateEmailAddress(emailAddress);
-    this.updateUser(emailAddress, username);
+  /**
+   * Returns an observable which emits (only once) an error message if one
+   * occurred or null if not and then completes
+   */
+  private validateRegistration(reg: RegisterComponent): Observable<string> {
+    const validateEmailObs = this.validateEmail(reg.email.value);
+    const validateUsernameObs = this.validateUsername(reg.username.value);
+    return Observable.combineLatest(validateEmailObs, validateUsernameObs,
+      (emailAddressValidationError, usernameValidationError) => {
+        if (emailAddressValidationError) {
+          console.log('there was an email validation error');
+          return emailAddressValidationError;
+        } else {
+          if (usernameValidationError) {
+            console.log('there was an username validation error');
+            return usernameValidationError;
+          } else {
+            console.log('there was no validation error');
+            return null;
+          }
+        }
+      }); // todo is first here necessary?
   }
 
-  updateUsername(username: string) {
-    console.log('updating username..');
-    this.db.list('/usernames').push({username: username, uid: this.currentUser.uid});
-/*    const usernameData = {};
-    usernameData[username] = this.currentUser.uid;
-    this.db.object(`/usernames`).update(usernameData);*/
-  }
-
-  updateEmailAddress(emailAddress: string) {
-    console.log('updating email address..');
-    this.db.list('/emailAddresses').push({emailAddress: emailAddress, uid: this.currentUser.uid});
-/*    const emailAddressData = {};
-    emailAddressData[emailAddress] = this.currentUser.uid;
-    this.db.object(`/emailAddresses`).update(emailAddressData);*/
-  }
-
-  updateUser(emailAddress: string, username: string) {
-    console.log('updating user..');
-    this.db.object(`/users/${this.currentUser.uid}`).update({'username': username, 'emailAddress': emailAddress});
-  }
-
-  checkUsername(username: string): Observable<boolean> {
+  /**
+    * Returns an observable which emits (only once) an error message if one
+    * occurred or null if not and then completes
+    */
+  private validateUsername(username: string): Observable<string> {
     console.log('checking username..');
     const result = this.db.list('/usernames', {
       query: {
         orderByChild: 'username',
         equalTo: username,
       },
-    preserveSnapshot: true,
+      preserveSnapshot: true,
     });
-    return result.map(snapshots => {
+    return result.first().map(snapshots => {
       console.log(snapshots);
-      return snapshots.length === 0;
+      if (snapshots.length === 0) {
+        return null;
+      } else {
+        return 'Username already taken';
+      }
     });
-/*    return this.db.object(`/usernames/${username}`)
-      .map((usernameData => !usernameData.$value));*/
-    // return Observable.from([true]);
   }
 
-  checkEmail(emailAddress: string): Observable<boolean> {
+  /**
+   * Returns an observable which emits (only once) an error message if one
+   * occurred or null if not and then completes
+   */
+  private validateEmail(emailAddress: string): Observable<string> {
     console.log('checking email address..');
     const result = this.db.list('/emailAddresses', {
       query: {
@@ -129,17 +180,44 @@ export class AuthService {
       },
       preserveSnapshot: true,
     });
-    return result.map(snapshots => snapshots.length === 0);
-/*    return this.db.object('/emailAddresses/') // todo Problem: queues whole list..
-      .map((emailAddressesData => !emailAddressesData[emailAddress]));*/
-    // return Observable.from([true]);
+    return result.first().map(snapshots => {
+      console.log(snapshots);
+      if (snapshots.length === 0) {
+        return null;
+      } else {
+        return 'Email already taken';
+      }
+    });
   }
 
-  login(emailAddress: string, password: string) {
+  private updateUserData(emailAddress: string, username: string) {
+    console.log('updating user data..');
+    this.updateUsername(username);
+    this.updateEmailAddress(emailAddress);
+    this.updateUser(emailAddress, username);
+  }
+
+  private updateUsername(username: string) {
+    console.log('updating username..');
+    this.db.list('/usernames').push({username: username, uid: this.currentUser.uid});
+  }
+
+  private updateEmailAddress(emailAddress: string) {
+    console.log('updating email address..');
+    this.db.list('/emailAddresses').push({emailAddress: emailAddress, uid: this.currentUser.uid});
+  }
+
+  private updateUser(emailAddress: string, username: string) {
+    console.log('updating user..');
+    this.db.object(`/users/${this.currentUser.uid}`).update({'username': username, 'emailAddress': emailAddress});
+  }
+
+  // todo should change this like emailReg..
+  public login(emailAddress: string, password: string) { // todo should decide where to handel login logout..
     console.log('logging in');
-    return this.afAuth.auth.signInWithEmailAndPassword(emailAddress, password)
-      .then(() => {
-        this.router.navigate(['/activities']);
+    return this.afAuth.auth.signInWithEmailAndPassword(emailAddress, password) // todo does this return a promise with auth?
+      .then(() => { // todo if yes we can move the handleLogin logic here
+        this.router.navigate(['/activities']); // todo but the way in initialize is recommended right?
         return null;
       })
       .catch(error => {
@@ -147,10 +225,11 @@ export class AuthService {
       });
   }
 
-  logout() {
+  public logout() {
     this.afAuth.auth.signOut()
       .then(() => {
-        this.router.navigate(['/login']);
+        this.router.navigate(['/login']); // todo should decide where to handel login logout..
       });
   }
+
 }

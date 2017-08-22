@@ -8,7 +8,7 @@ export class AuthGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     console.log('auth guard..');
-    return this.authService.isAuth().first();
+    return this.authService.isAuth().first(); // todo what is first doing
   }
 
 }
