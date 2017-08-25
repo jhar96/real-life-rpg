@@ -1,25 +1,29 @@
 
-<div class="ui secondary pointing menu">
-  <a class="item">
+<div class="ui secondary blue pointing menu">
+  <a class="item" [routerLink]="['home']" [ngClass]="{'active': homeIsHovered}"
+     (mouseenter)="toggleHomeActive()" (mouseleave)="toggleHomeActive()"
+     routerLinkActive="active">
     RealLifeRPG
   </a>
-  <a class="item" [routerLink]="['activities']" routerLinkActive="active" *ngIf="isAuthenticated">
+  <a class="item" [routerLink]="['activities']" [ngClass]="{'active': activitiesIsHovered}"
+     (mouseenter)="toggleActivitiesActive()" (mouseleave)="toggleActivitiesActive()"
+     routerLinkActive="active" *ngIf="isAuthenticated">
     Activities
   </a>
-<!--  <a class="item" [routerLink]="['profile']" routerLinkActive="active">
-    Profile
-  </a>
-  <a class="item" [routerLink]="['protected']" routerLinkActive="active">
-    Protected content
-  </a>-->
   <div class="right menu">
-        <a class="ui item" [routerLink]="['login']" routerLinkActive="active" *ngIf="!isAuthenticated">
+        <a class="ui item" [routerLink]="['login']" [ngClass]="{'active': loginIsHovered}"
+           (mouseenter)="toggleLoginActive()" (mouseleave)="toggleLoginActive()"
+           routerLinkActive="active" *ngIf="!isAuthenticated">
           Login
         </a>
-        <a class="ui item" [routerLink]="['register']" routerLinkActive="active" *ngIf="!isAuthenticated">
+        <a class="ui item" [routerLink]="['register']" [ngClass]="{'active': registerIsHovered}"
+           (mouseenter)="toggleRegisterActive()" (mouseleave)="toggleRegisterActive()"
+           routerLinkActive="active" *ngIf="!isAuthenticated">
           Register
         </a>
-    <a class="ui item" (click)="onLogout()" style="cursor: pointer" *ngIf="isAuthenticated">
+    <a class="ui item" (click)="onLogout()" style="cursor: pointer" *ngIf="isAuthenticated"
+       [ngClass]="{'active': logoutIsHovered}"
+       (mouseenter)="toggleLogoutActive()" (mouseleave)="toggleLogoutActive()">
       Logout
     </a>
   </div>

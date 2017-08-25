@@ -16,8 +16,14 @@ import {RouterTestingModule} from "@angular/router/testing";
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
+  let auth: AuthService;
 
-  beforeEach(async(() => {
+
+  beforeEach(() => {
+    const authServiceStub = {
+      login() {},
+    };
+
     TestBed.configureTestingModule({
       imports: [
         ReactiveFormsModule,
@@ -31,19 +37,25 @@ describe('LoginComponent', () => {
         FirstKeyPipe
       ],
       providers: [
-        AuthService,
+        {provide: AuthService, useValue: authServiceStub }
       ]
-    })
-    .compileComponents();
-  }));
+    });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
+
+    auth = TestBed.get(AuthService);
+
     fixture.detectChanges();
   });
 
   it('should be created', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should call the AuthServices logout method with itself an arg if onLogout is called', () => {
+    const spy = spyOn(auth, 'login');
+    component.onLogin();
+    expect(spy).toHaveBeenCalledWith(component);
   });
 });

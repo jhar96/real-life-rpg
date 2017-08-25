@@ -18,6 +18,9 @@ import {FirstKeyPipe} from "./util/first-key.pipe";
 import {AuthService} from "./auth/auth.service";
 import {AuthGuard} from "./auth/auth.guard";
 import {NoAuthGuard} from "./auth/no-auth.guard";
+import {ActivitiesService} from "./activities/activities.service";
+import { HomeComponent } from './home/home.component';
+import {CompletedActivitiesService} from "./activities/completed-activities.service";
 
 @NgModule({
   declarations: [
@@ -26,7 +29,8 @@ import {NoAuthGuard} from "./auth/no-auth.guard";
     LoginComponent,
     RegisterComponent,
     ActivitiesComponent,
-    FirstKeyPipe
+    FirstKeyPipe,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
@@ -36,10 +40,12 @@ import {NoAuthGuard} from "./auth/no-auth.guard";
     AngularFireAuthModule,
     ReactiveFormsModule,
     CommonModule,
-    // FormsModule, // needed?
+    FormsModule,
   ],
   providers: [
     AuthService,
+    ActivitiesService,
+    CompletedActivitiesService,
     AuthGuard,
     NoAuthGuard,
   ],

@@ -11,7 +11,7 @@ import {AngularFireDatabaseModule} from "angularfire2/database";
 import {environment} from "../../../environments/environment";
 import {AuthService} from "../auth.service";
 
-describe('RegisterComponent', () => {
+xdescribe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
 

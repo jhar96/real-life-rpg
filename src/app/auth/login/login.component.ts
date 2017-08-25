@@ -9,39 +9,63 @@ import {AuthService} from "../auth.service";
 })
 export class LoginComponent implements OnInit {
 
-  loginForm: FormGroup;
+  private _loginForm: FormGroup;
 
-  loginError: string;
+  private _loginError: string;
 
-  loginSuccess: string;
+  private _loginSuccess: string;
 
-  loading = false;
+  private _isLoading = false;
 
   constructor(private fb: FormBuilder, private auth: AuthService) { }
 
   ngOnInit(): void {
-    this.loginForm = this.fb.group({
+    console.log('LoginComponent ngOnInit');
+    this._loginForm = this.fb.group({
       email: ['', Validators.compose([Validators.required, Validators.email])],
       password: ['', Validators.required],
     });
   }
 
   onLogin() {
-    this.loginError = null;
-    this.loginSuccess = null;
-    this.loading = true;
-    this.auth.login(this.email.value, this.password.value)
-      .then(result =>  {
-        if (result) {
-          this.loginError = result;
-        } else {
-          this.loginSuccess = 'Login successful';
-        }
-      });
-    this.loading = false;
+    this.auth.login(this);
   }
 
-  get email() { return this.loginForm.get('email'); }
+  get isLoading(): boolean {
+    return this._isLoading;
+  }
 
-  get password() { return this.loginForm.get('password'); }
+  get loginSuccess(): string {
+    return this._loginSuccess;
+  }
+
+  get loginError(): string {
+    return this._loginError;
+  }
+
+
+  get loginForm(): FormGroup {
+    return this._loginForm;
+  }
+
+  get email() {
+    return this._loginForm.get('email');
+  }
+
+  get password() {
+    return this._loginForm.get('password');
+  }
+
+  set loginSuccess(value: string) {
+    this._loginSuccess = value;
+  }
+
+  set loginError(value: string) {
+    this._loginError = value;
+  }
+
+  set isLoading(value: boolean) {
+    this._isLoading = value;
+  }
+
 }

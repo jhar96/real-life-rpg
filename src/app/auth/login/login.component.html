@@ -35,7 +35,7 @@
         </div>
 
         <button class="ui fluid large primary submit button" type="submit" [disabled]="!loginForm.valid">Login</button>
-        <div class="ui segment" *ngIf="loading">
+        <div class="ui segment" *ngIf="isLoading">
           <p></p>
           <div class="ui active inverted dimmer">
             <div class="ui loader"></div>

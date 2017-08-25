@@ -25,6 +25,7 @@ export class RegisterComponent implements OnInit {
   constructor(private fb: FormBuilder, private auth: AuthService) { }
 
   ngOnInit(): void {
+    console.log('ngOnInit');
     this._registerForm = this.fb.group({
       email: ['', Validators.compose([Validators.required, Validators.email])],
       username: ['', Validators.required],
@@ -34,7 +35,7 @@ export class RegisterComponent implements OnInit {
 
   onRegister() { // todo clicks beschränken? bzw dass man nichts anderes tun kann währenddessen?
     console.log('onRegister has been called');
-    this.auth.emailRegistration2(this);
+    this.auth.emailRegistration(this);
   }
 
   get registerForm(): FormGroup {

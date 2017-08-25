@@ -7,7 +7,7 @@ import {environment} from "../../environments/environment";
 import {AngularFireDatabaseModule} from "angularfire2/database";
 import {RouterTestingModule} from "@angular/router/testing";
 
-describe('AuthService', () => {
+xdescribe('AuthService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
