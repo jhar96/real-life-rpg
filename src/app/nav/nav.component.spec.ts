@@ -29,6 +29,7 @@ describe('NavComponent', () => {
       isAuth() {
         return Observable.empty();
       },
+      logout() {}
     };
 
     TestBed.configureTestingModule({
@@ -59,7 +60,7 @@ describe('NavComponent', () => {
     expect(component).toBeTruthy();
   });
 
-/*  describe('should if isAuthenticated is true', () => {
+  describe('should if isAuthenticated is true', () => {
     beforeEach(() => {
       component.isAuthenticated = true;
       fixture.detectChanges();
@@ -90,6 +91,7 @@ describe('NavComponent', () => {
       const des = fixture.debugElement.queryAll(By.css('a'));
 
       const index = des.findIndex(de => de.nativeElement.innerText === 'Logout'); //todo a bit fragile
+      console.log(index);
       expect(index).toBeGreaterThan(-1);
     });
   });
@@ -130,7 +132,6 @@ describe('NavComponent', () => {
   });
 
   it('should update isAuthenticated with true if returned from the AuthService', async(() => {
-    const auth = TestBed.get(AuthService);
     spyOn(auth, 'isAuth').and
       .callFake(() => {
         return (Observable.from([true]));
@@ -139,14 +140,12 @@ describe('NavComponent', () => {
     component.isAuthenticated = false;
     component.ngOnInit();
 
-    expect(component.isAuthenticated).toBe(true);
-    /!*    fixture.whenStable().then(() => { // todo correct??? or call ngoninit? what is this doing.. looks good tho
-     expect(component.isAuthenticated).toBe(true);
-     });*!/
+     fixture.whenStable().then(() => {
+       expect(component.isAuthenticated).toBe(true);
+     });
   }));
 
   it('should update isAuthenticated with false if returned from the AuthService', async(() => {
-    const auth = TestBed.get(AuthService);
     spyOn(auth, 'isAuth').and
       .callFake(() => {
         return (Observable.from([false]));
@@ -155,18 +154,43 @@ describe('NavComponent', () => {
     component.isAuthenticated = true;
     component.ngOnInit();
 
-    expect(component.isAuthenticated).toBe(false);
-    /!*    fixture.whenStable().then(() => { // todo correct??? or call ngoninit? what is this doing.. looks good tho
-     expect(component.isAuthenticated).toBe(true);
-     });*!/
+    fixture.whenStable().then(() => {
+      expect(component.isAuthenticated).toBe(false);
+    });
   }));
 
-  it('should call logout from the AuthService if onLogout called', async(() => {
-    const auth = TestBed.get(AuthService);
+/*  it('should toggle logoutIsActive if ' +
+    'toggleLogoutActive is called (true => false)', () => {
+    // component.isAuthenticated = true;
+    // fixture.detectChanges();
+    // let des = fixture.debugElement.queryAll(By.css('a'));
+    // let logoutLink = des.find(de => de.nativeElement.innerText === 'Logout'); // todo a bit fragile
+    // logoutLink.classes['active'] = true;
+    // expect(logoutLink.classes['active']).toBeTruthy();
+    //
+    // component.toggleLogoutActive();
+    // fixture.detectChanges();
+    //
+    // des = fixture.debugElement.queryAll(By.css('a'));
+    // logoutLink = des.find(de => de.nativeElement.innerText === 'Logout'); // todo a bit fragile
+    // expect(logoutLink.classes['active']).toBeFalsy();
+    component.logoutIsActive = true;
+    component.toggleLogoutActive();
+
+    expect(component.logoutIsActive).toBeFalsy();
+  });
+
+  it('should toggle logoutIsActive if ' +
+    'toggleLogoutActive is called (false => true)', () => {
+    component.logoutIsActive = false;
+    component.toggleLogoutActive();
+
+    expect(component.logoutIsActive).toBeTruthy();
+  });*/
+
+  it('should call the AuthServices logout method if onLogout is called', () => {
     const spy = spyOn(auth, 'logout');
-
     component.onLogout();
-
     expect(spy).toHaveBeenCalled();
-  }));*/
+  });
 });

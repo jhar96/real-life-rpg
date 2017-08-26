@@ -1,30 +1,50 @@
-
 <div class="ui secondary blue pointing menu">
-  <a class="item" [routerLink]="['home']" [ngClass]="{'active': homeIsHovered}"
+  <a class="item hoverable" id="hover1" [routerLink]="['home']"
+     routerLinkActive="active">
+    RealLifeRPG
+  </a>
+  <a class="item" id="hover2" [routerLink]="['activities']"
+     routerLinkActive="active" *ngIf="isAuthenticated">
+    Activities
+  </a>
+  <div class="right menu">
+    <a class="ui item" id="hover3" [routerLink]="['login']"
+       routerLinkActive="active" *ngIf="!isAuthenticated">
+      Login
+    </a>
+    <a class="ui item" id="hover4" [routerLink]="['register']"
+       routerLinkActive="active" *ngIf="!isAuthenticated">
+      Register
+    </a>
+    <a class="ui item" id="hover5" (click)="onLogout()" style="cursor: pointer" *ngIf="isAuthenticated">
+      Logout
+    </a>
+  </div>
+<!--  <a class="item" [routerLink]="['home']" [ngClass]="{'active': homeIsActive}"
      (mouseenter)="toggleHomeActive()" (mouseleave)="toggleHomeActive()"
      routerLinkActive="active">
     RealLifeRPG
   </a>
-  <a class="item" [routerLink]="['activities']" [ngClass]="{'active': activitiesIsHovered}"
+  <a class="item" [routerLink]="['activities']" [ngClass]="{'active': activitiesIsActive}"
      (mouseenter)="toggleActivitiesActive()" (mouseleave)="toggleActivitiesActive()"
      routerLinkActive="active" *ngIf="isAuthenticated">
     Activities
   </a>
   <div class="right menu">
-        <a class="ui item" [routerLink]="['login']" [ngClass]="{'active': loginIsHovered}"
+        <a class="ui item" [routerLink]="['login']" [ngClass]="{'active': loginIsActive}"
            (mouseenter)="toggleLoginActive()" (mouseleave)="toggleLoginActive()"
            routerLinkActive="active" *ngIf="!isAuthenticated">
           Login
         </a>
-        <a class="ui item" [routerLink]="['register']" [ngClass]="{'active': registerIsHovered}"
+        <a class="ui item" [routerLink]="['register']" [ngClass]="{'active': registerIsActive}"
            (mouseenter)="toggleRegisterActive()" (mouseleave)="toggleRegisterActive()"
            routerLinkActive="active" *ngIf="!isAuthenticated">
           Register
         </a>
     <a class="ui item" (click)="onLogout()" style="cursor: pointer" *ngIf="isAuthenticated"
-       [ngClass]="{'active': logoutIsHovered}"
+       [ngClass]="{'active': logoutIsActive}"
        (mouseenter)="toggleLogoutActive()" (mouseleave)="toggleLogoutActive()">
       Logout
     </a>
-  </div>
+  </div>-->
 </div>

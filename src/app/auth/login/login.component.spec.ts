@@ -53,7 +53,7 @@ describe('LoginComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should call the AuthServices logout method with itself an arg if onLogout is called', () => {
+  it('should call the AuthServices login method with itself as an arg if onLogin is called', () => {
     const spy = spyOn(auth, 'login');
     component.onLogin();
     expect(spy).toHaveBeenCalledWith(component);

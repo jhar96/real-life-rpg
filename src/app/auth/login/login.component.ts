@@ -27,6 +27,9 @@ export class LoginComponent implements OnInit {
     });
   }
 
+  /**
+   * Logs the user in with the data provided by the form
+   */
   onLogin() {
     this.auth.login(this);
   }
@@ -42,7 +45,6 @@ export class LoginComponent implements OnInit {
   get loginError(): string {
     return this._loginError;
   }
-
 
   get loginForm(): FormGroup {
     return this._loginForm;
