@@ -10,6 +10,8 @@ import {Subject} from "rxjs";
 import {RegisterComponent} from "./register/register.component";
 import {LoginComponent} from "./login/login.component";
 import * as firebase from 'firebase/app';
+import {AuthValidatorService} from "../util/validation/auth-validator.service";
+import {DatabaseUpdaterService} from "../util/database-updater.service";
 
 @Injectable()
 export class AuthService {
@@ -31,6 +33,8 @@ export class AuthService {
   constructor(private afAuth: AngularFireAuth,
               private db: AngularFireDatabase,
               private router: Router,
+              private validator: AuthValidatorService,
+              private updater: DatabaseUpdaterService,
   ) {
     this.initialize();
   }
@@ -94,7 +98,7 @@ export class AuthService {
     console.log('createUser');
     this._currentUser = new User(userData.emailAddress, userData.username, auth.uid);
     console.log(this._currentUser);
-  }
+  } // todo own class maybe
 
   /**
    * Handles what should happen if the user logs in for the first time
@@ -103,7 +107,7 @@ export class AuthService {
   private firstLogin(auth) {
     console.log('firstLogin');
     this._currentUser = new User(this.tempUser.emailAddress, this.tempUser.username, auth.uid);
-    this.updateUserData(this.tempUser.emailAddress, this.tempUser.username);
+    this.updater.updateUserData(this.tempUser.emailAddress, this.tempUser.username, this._currentUser.uid);
   } // todo should this be called handle first log in? when to call a method handle?
 
   /**
@@ -139,7 +143,7 @@ export class AuthService {
   public emailRegistration(reg: RegisterComponent) {
     console.log('emailRegistration');
     this.registrationPreparation(reg);
-    this.validateRegistration(reg)
+    this.validator.validateRegistration(reg)
       .subscribe(error => {
         if (error) {
           this.handleRegistrationError(reg, error);
@@ -169,7 +173,7 @@ export class AuthService {
     console.log('handleRegistrationError');
     reg.isLoading = false;
     reg.registrationError = error;
-  }
+  } // todo could make methods like this more general
 
   /**
    * Handles what should happen if the registration was successful
@@ -179,7 +183,7 @@ export class AuthService {
     console.log('handleRegistrationSuccess');
     reg.isLoading = false;
     reg.registrationSuccess = 'Registration succesful';
-  }
+  } // todo could make methods like this more general
 
   /**
    * Tries to perform the email registration
@@ -197,147 +201,6 @@ export class AuthService {
         console.log(registrationError.message);
         this.handleRegistrationError(reg, registrationError.message);
       });
-  }
-
-  /**
-   * Returns an observable which emits (only once) an error message if one
-   * occurred or null if not and then completes
-   */
-  private validateRegistration(reg: RegisterComponent): Observable<string> {
-    const validateEmailObs = this.validateEmail(reg.email.value);
-    const validateUsernameObs = this.validateUsername(reg.username.value);
-    return Observable.combineLatest(validateEmailObs, validateUsernameObs,
-      (emailAddressValidationError, usernameValidationError) => {
-        if (emailAddressValidationError) {
-          console.log('there was an email validation error');
-          return emailAddressValidationError;
-        } else {
-          if (usernameValidationError) {
-            console.log('there was an username validation error');
-            return usernameValidationError;
-          } else {
-            console.log('there was no validation error');
-            return null;
-          }
-        }
-      }); // todo is first here necessary?
-  }
-
-  /**
-    * Returns an observable which emits (only once) an error message if one
-    * occurred or null if not and then completes
-    */
-  private validateUsername(username: string): Observable<string> {
-    console.log('checking username..');
-    const result = this.db.list('/usernames', {
-      query: {
-        orderByChild: 'username',
-        equalTo: username,
-      },
-      preserveSnapshot: true,
-    });
-    return result.first().map(snapshots => {
-      console.log(snapshots);
-      if (snapshots.length === 0) {
-        return null;
-      } else {
-        return 'Username already taken';
-      }
-    });
-  }
-
-  /**
-   * Returns an observable which emits (only once) an error message if one
-   * occurred or null if not and then completes
-   */
-  private validateUsername2(username: string): Observable<string> {
-    console.log('checking username..');
-    const result = this.db.list('/usernames', {
-      query: {
-        orderByChild: 'username'
-      }
-    });
-    return result.first().map((usernames: Array<any>) => {
-      console.log(usernames);
-      const finding = usernames.find(usernameWrapper => this.findEqualUsername(usernameWrapper, username));
-      console.log(finding);
-      if (finding) {
-        return 'Username already taken';
-      }
-      return null;
-    });
-  } // todo working?
-
-  /**
-   * Returns true if the wrapper contains a username
-   * that is considered equal to the provided username
-   * Returns false otherwise
-   */
-  private findEqualUsername(usernameWrapper, username: string) { // todo debug
-    return usernameWrapper.username.toLowerCase().localeCompare(username.toLowerCase());
-  }
-
-  /**
-   * Returns an observable which emits (only once) an error message if one
-   * occurred or null if not and then completes
-   */
-  private validateEmail(emailAddress: string): Observable<string> {
-    console.log('checking email address..');
-    const result = this.db.list('/emailAddresses', {
-      query: {
-        orderByChild: 'emailAddress',
-        equalTo: emailAddress,
-      },
-      preserveSnapshot: true,
-    });
-    return result.first().map(snapshots => {
-      console.log(snapshots);
-      if (snapshots.length === 0) {
-        return null;
-      } else {
-        return 'Email already taken';
-      }
-    });
-  }
-
-  /**
-   * Updates the user data in the database
-   * @param emailAddress to be updated
-   * @param username to be updated
-   */
-  private updateUserData(emailAddress: string, username: string) { // todo error handling?
-    console.log('updating user data..');
-    this.updateUsername(username);
-    this.updateEmailAddress(emailAddress);
-    this.updateUser(emailAddress, username);
-  }
-
-  /**
-   * Updates the user name in the database
-   * @param username  to be updated
-   */
-  private updateUsername(username: string) {
-    console.log('updating username..');
-    this.db.list('/usernames').push({username: username, uid: this._currentUser.uid});
-  }
-
-  /**
-   * Updates the email address in the database
-   * @param emailAddress to be updated
-   */
-  private updateEmailAddress(emailAddress: string) {
-    console.log('updating email address..');
-    this.db.list('/emailAddresses').push({emailAddress: emailAddress, uid: this._currentUser.uid});
-  }
-
-  /**
-   * Updates the user in the database
-   * @param emailAddress to be updated
-   * @param username to be updated
-   */
-  private updateUser(emailAddress: string, username: string) {
-    console.log('updating user..');
-    this.db.object(`/users/${this._currentUser.uid}`).update({'username': username, 'emailAddress': emailAddress});
   }
 
   /**
@@ -387,7 +250,7 @@ export class AuthService {
     console.log('handleLoginError');
     log.isLoading = false;
     log.loginError = error; // todo remap errors cause too detailed?
-  }
+  } // todo could make methods like this more general
 
   /**
    * Handles what should happen if the login was successful
@@ -397,7 +260,7 @@ export class AuthService {
     console.log('handleLoginSuccess');
     log.isLoading = false;
     log.loginSuccess = 'Login successful';
-  }
+  } // todo could make methods like this more general
 
   /**
    * Logs out the user

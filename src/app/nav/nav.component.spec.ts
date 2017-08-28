@@ -16,7 +16,7 @@ import {RegisterComponent} from "../auth/register/register.component";
 import {HomeComponent} from "../home/home.component";
 import {AuthGuard} from "../auth/auth.guard";
 import {NoAuthGuard} from "../auth/no-auth.guard";
-import {FirstKeyPipe} from "../util/first-key.pipe";
+import {FirstKeyPipe} from "../util/pipes/first-key.pipe";
 import {ReactiveFormsModule} from "@angular/forms";
 
 describe('NavComponent', () => {

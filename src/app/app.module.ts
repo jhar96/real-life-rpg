@@ -14,13 +14,15 @@ import {AngularFireDatabaseModule} from "angularfire2/database";
 import {AngularFireAuthModule} from "angularfire2/auth";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
-import {FirstKeyPipe} from "./util/first-key.pipe";
+import {FirstKeyPipe} from "./util/pipes/first-key.pipe";
 import {AuthService} from "./auth/auth.service";
 import {AuthGuard} from "./auth/auth.guard";
 import {NoAuthGuard} from "./auth/no-auth.guard";
 import {ActivitiesService} from "./activities/activities.service";
 import { HomeComponent } from './home/home.component';
 import {CompletedActivitiesService} from "./activities/completed-activities.service";
+import {AuthValidatorService} from "./util/validation/auth-validator.service";
+import {DatabaseUpdaterService} from "./util/database-updater.service";
 
 @NgModule({
   declarations: [
@@ -48,6 +50,8 @@ import {CompletedActivitiesService} from "./activities/completed-activities.serv
     CompletedActivitiesService,
     AuthGuard,
     NoAuthGuard,
+    AuthValidatorService,
+    DatabaseUpdaterService,
   ],
   bootstrap: [AppComponent]
 })
