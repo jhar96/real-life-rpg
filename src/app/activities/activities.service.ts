@@ -30,9 +30,6 @@ export class ActivitiesService {
     console.log('getActivities');
     const uid = this.auth.getCurrentUserId();
     console.log('uid ' + uid);
-    return this.db.list(`/activities/${uid}`, {
-      query: {
-      },
-    });
+    return this.db.list(`/activities/${uid}`);
   }
 }

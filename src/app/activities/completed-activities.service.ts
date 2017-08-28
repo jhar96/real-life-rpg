@@ -27,10 +27,7 @@ export class CompletedActivitiesService {
     console.log('getCompletedActivities');
     const uid = this.auth.getCurrentUserId();
     console.log('uid ' + uid);
-    return this.db.list(`/completedActivities/${uid}`, {
-      query: {
-      },
-    });
+    return this.db.list(`/completedActivities/${uid}`);
   }
 
 }

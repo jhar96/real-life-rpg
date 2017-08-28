@@ -11,11 +11,16 @@ import {AngularFireDatabaseModule} from "angularfire2/database";
 import {environment} from "../../../environments/environment";
 import {AuthService} from "../auth.service";
 
-xdescribe('RegisterComponent', () => {
+describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
+  let auth: AuthService;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
+    const authServiceStub = {
+      emailRegistration(reg: RegisterComponent) {},
+    };
+
     TestBed.configureTestingModule({
       imports: [
         ReactiveFormsModule,
@@ -29,17 +34,43 @@ xdescribe('RegisterComponent', () => {
         FirstKeyPipe
       ],
       providers: [
-        AuthService,
+        {provide: AuthService, useValue: authServiceStub }
       ]
-    })
-    .compileComponents();
-  }));
+    });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(RegisterComponent);
     component = fixture.componentInstance;
+
+    auth = TestBed.get(AuthService);
+
     fixture.detectChanges();
   });
+
+  // beforeEach(async(() => {
+  //   TestBed.configureTestingModule({
+  //     imports: [
+  //       ReactiveFormsModule,
+  //       RouterTestingModule.withRoutes([]),
+  //       AngularFireModule.initializeApp(environment.firebase),
+  //       AngularFireDatabaseModule,
+  //       AngularFireAuthModule,
+  //     ],
+  //     declarations: [
+  //       RegisterComponent,
+  //       FirstKeyPipe
+  //     ],
+  //     providers: [
+  //       AuthService,
+  //     ]
+  //   })
+  //   .compileComponents();
+  // }));
+  //
+  // beforeEach(() => {
+  //   fixture = TestBed.createComponent(RegisterComponent);
+  //   component = fixture.componentInstance;
+  //   fixture.detectChanges();
+  // });
 
   it('should be created', () => {
     expect(component).toBeTruthy();
@@ -71,6 +102,12 @@ xdescribe('RegisterComponent', () => {
 
     const index = des.findIndex(de => de.attributes['type'] === 'submit');
     expect(index).toBeGreaterThan(-1);
+  });
+
+  it('should call the AuthServices emailRegistration method with itself as an arg if onRegister is called', () => {
+    const spy = spyOn(auth, 'emailRegistration');
+    component.onRegister();
+    expect(spy).toHaveBeenCalledWith(component);
   });
 
 });

@@ -8,11 +8,15 @@ import {AngularFireModule} from "angularfire2";
 import {environment} from "../../environments/environment";
 import {RouterTestingModule} from "@angular/router/testing";
 import {Observable} from "rxjs/Observable";
+import {observable} from "rxjs/symbol/observable";
 describe('AuthGuard', () => {
-/*
   let guard: AuthGuard;
-  let auth: AuthService;*/
+  let auth: AuthService;
 
+  class AuthServiceStub {
+    isAuth() {
+    }
+  }
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -24,54 +28,38 @@ describe('AuthGuard', () => {
       ],
       providers: [
         AuthGuard,
-        AuthService
+        { provide: AuthService, useClass: AuthServiceStub },
       ],
     });
+
+    guard = TestBed.get(AuthGuard);
+    auth = TestBed.get(AuthService);
   });
-/*
 
-// todo
+  it('should create an instance', () => {
+    expect(guard).toBeDefined();
+  });
 
-   /!*  beforeEach(() => {
-   const afAuth = new AngularFireAuth();
-   const db: =AngularFireDatabase,
-   private router: Router,
-   spyOn(auth, 'initialize').and.callFake(() => {});
-   auth = new AuthService(null, null, null);
-   guard = new AuthGuard(auth);
-   });*!/
+  it('#canActivate should return Observable returned from #isAuth (true case)', () => {
+    const spy = spyOn(auth, 'isAuth').and.returnValue(Observable.from([true]));
 
-   it('kjmnbvfgd',
-   async(() => {
-   console.log('start');
-   const auth = TestBed.get(AuthService);
-   const guard = new AuthGuard(auth);
-   // add a spy
-   const spy = spyOn(auth, 'isAuth').and.callFake(() => {
-   return Observable.from([true]);
-   });
-   console.log('before can activate');
-   guard.canActivate(null, null);
-   console.log('after can activate');
-   expect(spy).toHaveBeenCalled();
-   })
-   );
+    const result = guard.canActivate(null, null);
 
-   /!*  it('should return the observable returned from the isAuth method of the AuthService (true case)', () => {
-   spyOn(auth, 'isAuth').and.callFake(() => {
-   return Observable.from([true]);
-   });
-   const result = guard.canActivate(null, null);
-   expect(result).toEqual(Observable.from([true]));
-   });
+    expect(spy).toHaveBeenCalled();
+    result.subscribe(value => { // todo what if obs empty.. could test that
+      expect(value).toBeTruthy();
+    });
+  });
 
-   it('should return the observable returned from the isAuth method of the AuthService (false case)', () => {
-   spyOn(auth, 'isAuth').and.callFake(() => {
-   return Observable.from([false]);
-   });
-   const result = guard.canActivate(null, null);
-   expect(result).toEqual(Observable.from([false]));
-   });*!/
-   */
+  it('#canActivate should return Observable returned from #isAuth (false case)', () => {
+    const spy = spyOn(auth, 'isAuth').and.returnValue(Observable.from([false]));
+
+    const result = guard.canActivate(null, null);
+
+    expect(spy).toHaveBeenCalled();
+    result.subscribe(value => { // todo what if obs empty.. could test that.. check if only one value returned
+      expect(value).toBeFalsy();
+    });
+  });
 
 });

@@ -5,23 +5,38 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import {RouterOutlet} from "@angular/router";
+import {NavComponent} from "./nav/nav.component";
+import {AuthService} from "./auth/auth.service";
+import {Observable} from "rxjs/Observable";
 
-xdescribe('AppComponent', () => {
+describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [ RouterTestingModule.withRoutes([]) ],
-      declarations: [ AppComponent ],
-      schemas: [ NO_ERRORS_SCHEMA ] // Todo There was another way maybe better
-    })
-      .compileComponents();
-  }));
-
   beforeEach(() => {
+    const authServiceStub = {
+      isAuth() {
+        return Observable.empty();
+      },
+      logout() {}
+    };
+
+    TestBed.configureTestingModule({
+      imports: [
+        RouterTestingModule.withRoutes([]),
+      ],
+      declarations: [
+        AppComponent,
+        NavComponent,
+      ],
+      providers: [
+        {provide: AuthService, useValue: authServiceStub }
+      ]
+    });
+
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
+
     fixture.detectChanges();
   });
 

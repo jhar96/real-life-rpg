@@ -1,13 +1,16 @@
 
 <div class="ui middle aligned grid">
   <div class="column">
-    <div class="ui fluid action input">
-      <input type="text" #newActivity placeholder="Activity"
-             wtx-context="BCD53DA3-7F8A-41C5-B652-087810DBBDB3">
-      <button class="ui blue icon button" (click)="addActivity(newActivity.value)">
-        <i class="plus icon"></i>
-      </button>
-    </div>
+    <form [formGroup]="addActivityForm" (ngSubmit)="addActivity()">
+      <div class="ui fluid action input">
+        <input type="text" placeholder="Activity" formControlName="newActivity" id="newActivity"
+               wtx-context="BCD53DA3-7F8A-41C5-B652-087810DBBDB3">
+        <button class="ui blue icon button" type="submit">
+          <i class="plus icon"></i>
+        </button>
+      </div>
+    </form>
+
     <div class="ui large relaxed divided list">
       <div class="item" *ngFor="let activity of activities | async">
         <div class="content">
