@@ -22,7 +22,7 @@ import {ActivitiesService} from "./activities/activities.service";
 import { HomeComponent } from './home/home.component';
 import {CompletedActivitiesService} from "./activities/completed-activities.service";
 import {AuthValidatorService} from "./util/validation/auth-validator.service";
-import {DatabaseUpdaterService} from "./util/database-updater.service";
+import {DatabasePusherService} from "./util/database-pusher.service";
 
 @NgModule({
   declarations: [
@@ -51,7 +51,7 @@ import {DatabaseUpdaterService} from "./util/database-updater.service";
     AuthGuard,
     NoAuthGuard,
     AuthValidatorService,
-    DatabaseUpdaterService,
+    DatabasePusherService,
   ],
   bootstrap: [AppComponent]
 })

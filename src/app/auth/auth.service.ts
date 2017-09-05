@@ -11,7 +11,7 @@ import {RegisterComponent} from "./register/register.component";
 import {LoginComponent} from "./login/login.component";
 import * as firebase from 'firebase/app';
 import {AuthValidatorService} from "../util/validation/auth-validator.service";
-import {DatabaseUpdaterService} from "../util/database-updater.service";
+import {DatabasePusherService} from "../util/database-pusher.service";
 
 @Injectable()
 export class AuthService {
@@ -34,7 +34,7 @@ export class AuthService {
               private db: AngularFireDatabase,
               private router: Router,
               private validator: AuthValidatorService,
-              private updater: DatabaseUpdaterService,
+              private pusher: DatabasePusherService,
   ) {
     this.initialize();
   }
@@ -68,7 +68,7 @@ export class AuthService {
    * Tries to load the user data from the database
    * @param auth: The current firebase user
    */
-  private tryLoadingUserData(auth) {
+  private tryLoadingUserData(auth) { // todo sollte hier auf keinen fall daten aus ner form ziehen. immer aus der db. falls inkonsistent
     console.log('tryLoadingUserData');
     console.log(auth.uid);
     this.db.object(`/users/${auth.uid}`).first().subscribe(userData => {
@@ -106,8 +106,8 @@ export class AuthService {
    */
   private firstLogin(auth) {
     console.log('firstLogin');
-    this._currentUser = new User(this.tempUser.emailAddress, this.tempUser.username, auth.uid);
-    this.updater.updateUserData(this.tempUser.emailAddress, this.tempUser.username, this._currentUser.uid);
+    this._currentUser = new User(this.tempUser.emailAddress, this.tempUser.username, auth.uid); // todo not elegant
+    this.pusher.pushUserData(this.tempUser.emailAddress, this.tempUser.username, this._currentUser.uid);
   } // todo should this be called handle first log in? when to call a method handle?
 
   /**

@@ -24,7 +24,7 @@ export class AuthValidatorService {
    * occurred or null if not and then completes
    */
   public validateRegistration(reg: RegisterComponent): Observable<string> {
-    const validateEmailObs = this.validateEmail(reg.email.value);
+    const validateEmailObs = this.validateEmailAddress(reg.email.value);
     const validateUsernameObs = this.validateUsername(reg.username.value);
     return Observable.combineLatest(validateEmailObs, validateUsernameObs,
       (emailAddressValidationError, usernameValidationError) => {
@@ -43,10 +43,10 @@ export class AuthValidatorService {
       }); // todo is first here necessary?
   }
 
-  /**
+/*  /!**
    * Returns an observable which emits (only once) an error message if one
    * occurred or null if not and then completes
-   */
+   *!/
   public validateUsername(username: string): Observable<string> {
     console.log('checking username..');
     const result = this.db.list('/usernames', {
@@ -64,13 +64,13 @@ export class AuthValidatorService {
         return 'Username already taken';
       }
     });
-  }
+  }*/
 
   /**
    * Returns an observable which emits (only once) an error message if one
    * occurred or null if not and then completes
    */
-  public validateUsername2(username: string): Observable<string> {
+  public validateUsername(username: string): Observable<string> {
     console.log('checking username..');
     const result = this.db.list('/usernames', {
       query: {
@@ -79,44 +79,51 @@ export class AuthValidatorService {
     });
     return result.first().map((usernames: Array<any>) => {
       console.log(usernames);
-      const finding = usernames.find(usernameWrapper => this.findEqualUsername(usernameWrapper, username));
+      const finding = usernames
+        .find(usernameWrapper => this.testLowercaseEqual(usernameWrapper.username, username));
       console.log(finding);
       if (finding) {
         return 'Username already taken';
       }
       return null;
     });
-  } // todo working?
+  }
 
   /**
-   * Returns true if the wrapper contains a username
-   * that is considered equal to the provided username
-   * Returns false otherwise
+   * Returns true if the strings are equal if both are in lowercase
    */
-  private findEqualUsername(usernameWrapper, username: string) { // todo debug
-    return usernameWrapper.username.toLowerCase().localeCompare(username.toLowerCase());
+  public testLowercaseEqual(string1: string, string2: string) { // todo could be in another class
+    return string1.toLowerCase() === string2.toLowerCase();
   }
 
   /**
    * Returns an observable which emits (only once) an error message if one
    * occurred or null if not and then completes
-   */
-  public validateEmail(emailAddress: string): Observable<string> {
+  */
+  public validateEmailAddress(emailAddress: string): Observable<string> {
     console.log('checking email address..');
     const result = this.db.list('/emailAddresses', {
       query: {
-        orderByChild: 'emailAddress',
-        equalTo: emailAddress,
-      },
-      preserveSnapshot: true,
+        orderByChild: 'emailAddress'
+      }
     });
-    return result.first().map(snapshots => {
+    return result.first().map((emailAddresses: Array<any>) => {
+      console.log(emailAddresses);
+      const finding = emailAddresses
+        .find(emailAddressWrapper => this.testLowercaseEqual(emailAddressWrapper.emailAddress, emailAddress));
+      console.log(finding);
+      if (finding) {
+        return 'Email already taken';
+      }
+      return null;
+    });
+/*    return result.first().map(snapshots => {
       console.log(snapshots);
       if (snapshots.length === 0) {
         return null;
       } else {
         return 'Email already taken';
       }
-    });
+    });*/
   }
 }

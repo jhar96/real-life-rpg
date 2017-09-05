@@ -7,7 +7,7 @@ import {environment} from "../../environments/environment";
 import {AngularFireDatabase} from "angularfire2/database";
 import {Router} from "@angular/router";
 import {AuthValidatorService} from "../util/validation/auth-validator.service";
-import {DatabaseUpdaterService} from "../util/database-updater.service";
+import {DatabasePusherService} from "../util/database-pusher.service";
 
 class DbStub {
 }
@@ -28,7 +28,7 @@ describe('AuthService', () => {
   let db: AngularFireDatabase;
   let router: Router;
   let validator: AuthValidatorService;
-  let updater: DatabaseUpdaterService;
+  let updater: DatabasePusherService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -42,7 +42,7 @@ describe('AuthService', () => {
         { provide: AngularFireDatabase, useClass: DbStub },
         { provide: Router, useClass: RouterStub},
         { provide: AuthValidatorService, useClass: avsStub},
-        { provide: DatabaseUpdaterService, useClass: dbuStub},
+        { provide: DatabasePusherService, useClass: dbuStub},
       ]
     });
 
@@ -50,7 +50,7 @@ describe('AuthService', () => {
     db = TestBed.get(AngularFireDatabase);
     router = TestBed.get(Router);
     validator = TestBed.get(AuthValidatorService);
-    updater = TestBed.get(DatabaseUpdaterService);
+    updater = TestBed.get(DatabasePusherService);
   });
 
   it('should create an instance', () => {
