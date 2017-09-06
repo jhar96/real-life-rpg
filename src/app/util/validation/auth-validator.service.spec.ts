@@ -1,9 +1,18 @@
 
-import {TestBed} from "@angular/core/testing";
-import {AngularFireDatabase} from "angularfire2/database";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {AngularFireDatabase, AngularFireDatabaseModule} from "angularfire2/database";
 import {AuthValidatorService} from "./auth-validator.service";
 import {Observable} from "rxjs/Observable";
 import ArrayLike = jasmine.ArrayLike;
+import {RegisterComponent} from "../../auth/register/register.component";
+import {ReactiveFormsModule} from "@angular/forms";
+import {RouterTestingModule} from "@angular/router/testing";
+import {AngularFireModule} from "angularfire2";
+import {environment} from "../../../environments/environment";
+import {AngularFireAuthModule} from "angularfire2/auth";
+import {FirstKeyPipe} from "../pipes/first-key.pipe";
+import {AuthService} from "../../auth/auth.service";
+import Spy = jasmine.Spy;
 
 class DbStub {
 
@@ -15,13 +24,43 @@ describe('AuthValidatorService', () => {
   let validator: AuthValidatorService;
   let db: AngularFireDatabase;
 
+  let reg: RegisterComponent;
+  let fixture: ComponentFixture<RegisterComponent>;
+  const authServiceStub = {
+  };
+
   beforeEach(() => {
+/*
     TestBed.configureTestingModule({
       providers: [
         AuthValidatorService,
-        { provide: AngularFireDatabase, useClass: DbStub }
+        { provide: AngularFireDatabase, useClass: DbStub },
+      ]
+    });*/
+
+    TestBed.configureTestingModule({
+      imports: [
+        ReactiveFormsModule,
+        RouterTestingModule.withRoutes([]),
+        AngularFireModule.initializeApp(environment.firebase),
+        AngularFireDatabaseModule,
+        AngularFireAuthModule,
+      ],
+      declarations: [
+        RegisterComponent,
+        FirstKeyPipe
+      ],
+      providers: [
+        {provide: AuthService, useValue: authServiceStub },
+        AuthValidatorService,
+        { provide: AngularFireDatabase, useClass: DbStub },
       ]
     });
+
+    fixture = TestBed.createComponent(RegisterComponent);
+    reg = fixture.componentInstance;
+
+    fixture.detectChanges();
 
     validator = TestBed.get(AuthValidatorService);
     db = TestBed.get(AngularFireDatabase);
@@ -116,6 +155,63 @@ describe('AuthValidatorService', () => {
     const result = validator.validateEmailAddress(null);
     expect(result).not.toEqual(Observable.empty());
   });
+
+  describe('#validateRegistration', () => {
+
+    let validateEmailAddressSpy;
+    let validateUsernameSpy: Spy;
+
+    beforeEach(() => {
+    });
+
+    it('should call #validateEmailAddress', () => {
+      validateEmailAddressSpy = spyOn(validator, 'validateEmailAddress').and.returnValue(Observable.empty());
+      validateUsernameSpy = spyOn(validator, 'validateUsername').and.returnValue(Observable.empty());
+      validator.validateRegistration(reg);
+      expect(validateEmailAddressSpy).toHaveBeenCalled();
+    });
+
+    it('should call #validateUsername', () => {
+      validateEmailAddressSpy = spyOn(validator, 'validateEmailAddress').and.returnValue(Observable.empty());
+      validateUsernameSpy = spyOn(validator, 'validateUsername').and.returnValue(Observable.empty());
+      validator.validateRegistration(reg);
+      expect(validateUsernameSpy).toHaveBeenCalled();
+    });
+
+    it('should return null if no errors occurred', () => {
+      let result;
+      validateEmailAddressSpy = spyOn(validator, 'validateEmailAddress').and.returnValue(Observable.from([null]));
+      validateUsernameSpy = spyOn(validator, 'validateUsername').and.returnValue(Observable.from([null]));
+      validator.validateRegistration(reg).subscribe(error => result = error);
+      expect(result).toBeNull();
+    });
+
+    it('should return the emailValidationError if it was the only error', () => {
+      let result;
+      validateEmailAddressSpy = spyOn(validator, 'validateEmailAddress').and.returnValue(Observable.from(['email']));
+      validateUsernameSpy = spyOn(validator, 'validateUsername').and.returnValue(Observable.from([null]));
+      validator.validateRegistration(reg).subscribe(error => result = error);
+      expect(result).toEqual('email');
+    });
+
+    it('should return the usernameValidationError if it was the only error', () => {
+      let result;
+      validateEmailAddressSpy = spyOn(validator, 'validateEmailAddress').and.returnValue(Observable.from([null]));
+      validateUsernameSpy = spyOn(validator, 'validateUsername').and.returnValue(Observable.from(['username']));
+      validator.validateRegistration(reg).subscribe(error => result = error);
+      expect(result).toEqual('username');
+    });
+
+    it('should return the emailValidationError if two errors occurred', () => {
+      let result;
+      validateEmailAddressSpy = spyOn(validator, 'validateEmailAddress').and.returnValue(Observable.from(['email']));
+      validateUsernameSpy = spyOn(validator, 'validateUsername').and.returnValue(Observable.from(['username']));
+      validator.validateRegistration(reg).subscribe(error => result = error);
+      expect(result).toEqual('email');
+    });
+
+  });
+
 
 // todo dont know how this is testable right now
 /*  it('#validateUsername should return an observable that emits at most once', () => {

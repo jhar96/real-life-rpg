@@ -26,7 +26,7 @@ export class AuthValidatorService {
   public validateRegistration(reg: RegisterComponent): Observable<string> {
     const validateEmailObs = this.validateEmailAddress(reg.email.value);
     const validateUsernameObs = this.validateUsername(reg.username.value);
-    return Observable.combineLatest(validateEmailObs, validateUsernameObs,
+    const errorObs = Observable.combineLatest(validateEmailObs, validateUsernameObs,
       (emailAddressValidationError, usernameValidationError) => {
         if (emailAddressValidationError) {
           console.log('there was an email validation error');
@@ -40,7 +40,9 @@ export class AuthValidatorService {
             return null;
           }
         }
-      }); // todo is first here necessary?
+      });
+    return errorObs.first(); // todo not nec, but doesnt hurt
+    // return Observable.empty();
   }
 
 /*  /!**
